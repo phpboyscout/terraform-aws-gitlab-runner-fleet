@@ -1,0 +1,11 @@
+[project]
+site_name = "terraform-aws-gitlab-runner-fleet"
+site_description = "A GitLab Runner fleeting fleet on AWS — one always-on manager plus scale-to-zero spot workers."
+site_author = "Matt Cockayne"
+site_url = "https://aws-gitlab-runner-fleet.iac.phpboyscout.uk"
+copyright = """
+Copyright &copy; 2026 Matt Cockayne
+"""
+
+[project.theme]
+language = "en"
