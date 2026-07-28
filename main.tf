@@ -68,7 +68,13 @@ locals {
 
 # --- distributed GitLab cache (S3) ------------------------------------
 
+#trivy:ignore:AVD-AWS-0132 SSE-S3 by design for non-secret ephemeral cache — see checkov CKV_AWS_145 rationale.
 resource "aws_s3_bucket" "cache" {
+  # checkov:skip=CKV_AWS_145:SSE-S3 is sufficient — non-secret ephemeral CI cache; a CMK adds cost/management for no gain.
+  # checkov:skip=CKV_AWS_21:Versioning is pointless for a write-once/expire-in-14-days cache.
+  # checkov:skip=CKV_AWS_18:Access logging unwarranted for a private, single-consumer cache bucket.
+  # checkov:skip=CKV_AWS_144:No cross-region replication — regenerable cache, region-locked estate.
+  # checkov:skip=CKV2_AWS_62:No event notifications — nothing subscribes; the runner cache is CLI-driven.
   count = var.enable_s3_cache && var.cache_s3_bucket == null ? 1 : 0
 
   bucket = "${var.name_prefix}-${data.aws_caller_identity.current.account_id}-cache"
@@ -102,6 +108,7 @@ resource "aws_s3_bucket_public_access_block" "cache" {
 # --- shared EFS cache (read-mostly: scanner DBs + cargo registry) -----
 
 resource "aws_efs_file_system" "cache" {
+  # checkov:skip=CKV_AWS_184:Encrypted with the default EFS key (encrypted=true) — non-secret CI cache data (scanner DBs, cargo registry) with a 14-day IA lifecycle; a CMK adds key management for no confidentiality gain.
   count = var.enable_efs_cache ? 1 : 0
 
   creation_token = "${var.name_prefix}-cache"
@@ -126,12 +133,15 @@ resource "aws_efs_mount_target" "cache" {
 
 # --- security groups ---------------------------------------------------
 
+#trivy:ignore:AVD-AWS-0104 Deliberate open egress (GitLab + fleeting) — see checkov CKV_AWS_382 rationale.
 resource "aws_security_group" "manager" {
+  # checkov:skip=CKV_AWS_382:Egress to any address is required — the manager reaches GitLab.com and the fleeting plugin manages instances; there is no fixed egress CIDR set.
   name_prefix = "${var.name_prefix}-manager-"
   vpc_id      = var.vpc_id
   description = "Fleet manager: egress only; connects to workers within the fleet SGs."
 
   egress {
+    description = "Egress to GitLab.com + package/registry mirrors."
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -145,7 +155,9 @@ resource "aws_security_group" "manager" {
   }
 }
 
+#trivy:ignore:AVD-AWS-0104 Deliberate open egress (registries + GitLab) — see checkov CKV_AWS_382 rationale.
 resource "aws_security_group" "worker" {
+  # checkov:skip=CKV_AWS_382:Egress to any address is required — workers pull job container images from arbitrary registries and reach GitLab.com; no fixed egress CIDR set.
   name_prefix = "${var.name_prefix}-worker-"
   vpc_id      = var.vpc_id
   description = "Fleet workers: SSH from the manager only; egress to GitLab + registries."
@@ -159,6 +171,7 @@ resource "aws_security_group" "worker" {
   }
 
   egress {
+    description = "Egress to GitLab.com + job image registries + package mirrors."
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -173,6 +186,7 @@ resource "aws_security_group" "worker" {
 }
 
 resource "aws_security_group" "efs" {
+  # checkov:skip=CKV2_AWS_5:Attached to the EFS mount targets via aws_efs_mount_target.security_groups — checkov does not trace that attachment.
   count = var.enable_efs_cache ? 1 : 0
 
   name_prefix = "${var.name_prefix}-efs-"
@@ -214,6 +228,8 @@ resource "aws_iam_role" "manager" {
 }
 
 data "aws_iam_policy_document" "manager" {
+  # checkov:skip=CKV_AWS_356:The fleeting plugin needs account-wide autoscaling + ec2:DescribeInstances + ec2-instance-connect across dynamically-created spot instances it does not know in advance; these read/connect actions cannot be resource-scoped.
+  # checkov:skip=CKV_AWS_111:Same — the fleeting Describe/Connect actions are not write-with-constraints; the write actions (SetDesiredCapacity/Terminate) target the fleet ASG operationally.
   # Fleeting: manage the worker ASG + connect to instances.
   statement {
     sid = "Fleeting"
@@ -333,7 +349,7 @@ resource "aws_launch_template" "worker" {
 
   metadata_options {
     http_tokens                 = "required"
-    http_put_response_hop_limit = 2
+    http_put_response_hop_limit = 1
   }
 
   tag_specifications {
@@ -420,7 +436,7 @@ resource "aws_launch_template" "manager" {
 
   metadata_options {
     http_tokens                 = "required"
-    http_put_response_hop_limit = 2
+    http_put_response_hop_limit = 1
   }
 
   tag_specifications {
