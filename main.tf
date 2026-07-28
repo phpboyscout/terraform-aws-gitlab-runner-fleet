@@ -377,11 +377,16 @@ resource "aws_launch_template" "worker" {
 }
 
 resource "aws_autoscaling_group" "worker" {
-  name                = local.worker_asg_name
-  min_size            = 0
-  max_size            = var.max_instances
-  desired_capacity    = 0
-  vpc_zone_identifier = var.subnet_ids
+  name             = local.worker_asg_name
+  min_size         = 0
+  max_size         = var.max_instances
+  desired_capacity = 0
+  # The fleeting plugin owns instance lifecycle — protect new instances
+  # from ASG scale-in so the ASG never terminates a worker the plugin is
+  # using (it logs "new instances are not protected from scale in" and
+  # detaches/terminates them itself otherwise).
+  protect_from_scale_in = true
+  vpc_zone_identifier   = var.subnet_ids
 
   mixed_instances_policy {
     instances_distribution {
