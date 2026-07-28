@@ -1,0 +1,63 @@
+# gitlab-runner config for the fleeting fleet manager — rendered by the
+# module and written by the manager's user-data (which substitutes the
+# runner token read from SSM for __RUNNER_TOKEN__). Modelled on the live
+# cattle-ops config, plus the D8 cache mounts/env/pre_build the old fleet
+# lacked.
+concurrent = ${max_instances}
+check_interval = 3
+log_format = "json"
+connection_max_age = "15m"
+
+[[runners]]
+  name = "${runner_name}"
+  url = "${gitlab_url}"
+  token = "__RUNNER_TOKEN__"
+  executor = "docker-autoscaler"
+  request_concurrency = 1
+  output_limit = 4096
+  limit = ${max_instances}
+  environment = ${environment_json}
+  pre_build_script = ${pre_build_script_json}
+
+  [runners.docker]
+    disable_cache = false
+    image = "${default_job_image}"
+    privileged = true
+    pull_policy = ["always"]
+    volumes = ${docker_volumes_json}
+
+%{ if enable_s3_cache ~}
+  [runners.cache]
+    Type = "s3"
+    Shared = false
+    [runners.cache.s3]
+      AuthenticationType = "iam"
+      ServerAddress = "s3.amazonaws.com"
+      BucketName = "${cache_bucket}"
+      BucketLocation = "${region}"
+      Insecure = false
+%{ endif ~}
+
+  [runners.autoscaler]
+    plugin = "aws:latest"
+    capacity_per_instance = ${capacity_per_instance}
+    update_interval = "1m"
+    update_interval_when_expecting = "2s"
+    max_use_count = 100
+    max_instances = ${max_instances}
+    instance_ready_command = "cloud-init status --wait"
+
+    [runners.autoscaler.plugin_config]
+      name = "${worker_asg_name}"
+
+    [runners.autoscaler.connector_config]
+      username          = "ubuntu"
+      use_external_addr = false
+
+    [[runners.autoscaler.policy]]
+      idle_count         = 0
+      idle_time          = "${idle_time}"
+      periods            = ["* * * * *"]
+      scale_factor       = 0
+      scale_factor_limit = 0
+      timezone           = "UTC"

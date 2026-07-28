@@ -1,0 +1,22 @@
+#!/bin/bash
+# Manager bootstrap (Amazon Linux 2023: awscli + ssm-agent baked in).
+# Installs gitlab-runner + the fleeting AWS plugin, reads the runner
+# token from SSM, writes config.toml, and starts the service.
+set -euxo pipefail
+
+curl -L "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh" | bash
+dnf install -y "gitlab-runner-${runner_version}"
+
+TOKEN="$(aws ssm get-parameter --name '${ssm_token_param}' --with-decryption --region '${region}' --query Parameter.Value --output text)"
+
+install -d -m 0700 /etc/gitlab-runner
+cat > /etc/gitlab-runner/config.toml <<'RUNNER_CONFIG'
+${config_toml}
+RUNNER_CONFIG
+# Substitute the token read from SSM (kept out of Terraform state/user-data).
+sed -i "s|__RUNNER_TOKEN__|$${TOKEN}|" /etc/gitlab-runner/config.toml
+
+# Install the fleeting plugin(s) referenced in config (plugin = "aws:latest").
+gitlab-runner fleeting install
+systemctl enable --now gitlab-runner
+systemctl restart gitlab-runner

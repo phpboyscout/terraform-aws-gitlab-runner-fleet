@@ -1,0 +1,22 @@
+#!/bin/bash
+# Worker bootstrap (Ubuntu). Installs Docker (the docker-autoscaler
+# executor runs jobs with it) and mounts the shared EFS caches at the
+# same paths runner1 uses, so scanner DBs + the cargo registry are warm
+# (D8). cloud-init completion gates dispatch via instance_ready_command.
+set -euxo pipefail
+export DEBIAN_FRONTEND=noninteractive
+apt-get update
+apt-get install -y docker.io nfs-common
+systemctl enable --now docker
+usermod -aG docker ubuntu
+
+%{ if enable_efs_cache ~}
+EFS='${efs_dns_name}'
+mkdir -p /opt/ci-cache /opt/rust-cache/shared
+MNT_OPTS='nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport,_netdev'
+# EFS access points expose the two cache roots as separate exports.
+mount -t nfs4 -o "$MNT_OPTS" "$EFS":/ /mnt 2>/dev/null || true
+mountpoint -q /opt/ci-cache        || mount -t nfs4 -o "$MNT_OPTS" "$EFS":/ci-cache /opt/ci-cache
+mountpoint -q /opt/rust-cache/shared || mount -t nfs4 -o "$MNT_OPTS" "$EFS":/rust-cache /opt/rust-cache/shared
+chmod 0777 /opt/ci-cache /opt/rust-cache/shared || true
+%{ endif ~}
