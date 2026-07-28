@@ -122,35 +122,7 @@ resource "aws_efs_mount_target" "cache" {
   security_groups = [aws_security_group.efs[0].id]
 }
 
-# Two exports (ci-cache, rust-cache) so worker user-data mounts each at
-# runner1's paths.
-resource "aws_efs_access_point" "ci_cache" {
-  count          = var.enable_efs_cache ? 1 : 0
-  file_system_id = aws_efs_file_system.cache[0].id
-  root_directory {
-    path = "/ci-cache"
-    creation_info {
-      owner_gid   = 0
-      owner_uid   = 0
-      permissions = "0777"
-    }
-  }
-  tags = var.tags
-}
 
-resource "aws_efs_access_point" "rust_cache" {
-  count          = var.enable_efs_cache ? 1 : 0
-  file_system_id = aws_efs_file_system.cache[0].id
-  root_directory {
-    path = "/rust-cache"
-    creation_info {
-      owner_gid   = 0
-      owner_uid   = 0
-      permissions = "0777"
-    }
-  }
-  tags = var.tags
-}
 
 # --- security groups ---------------------------------------------------
 

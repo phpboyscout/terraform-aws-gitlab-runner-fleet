@@ -1,8 +1,8 @@
 #!/bin/bash
-# Worker bootstrap (Ubuntu). Installs Docker (the docker-autoscaler
-# executor runs jobs with it) and mounts the shared EFS caches at the
-# same paths runner1 uses, so scanner DBs + the cargo registry are warm
-# (D8). cloud-init completion gates dispatch via instance_ready_command.
+# Worker bootstrap (Ubuntu). Docker is required (the docker-autoscaler
+# executor runs jobs with it); the EFS shared cache is BEST-EFFORT — a
+# mount failure must never break the worker (jobs degrade to online, like
+# runner1's fallback), so cloud-init only fails if Docker itself fails.
 set -euxo pipefail
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
@@ -10,13 +10,18 @@ apt-get install -y docker.io nfs-common
 systemctl enable --now docker
 usermod -aG docker ubuntu
 
+# --- shared EFS cache (best-effort, never fatal) ----------------------
+set +e
 %{ if enable_efs_cache ~}
 EFS='${efs_dns_name}'
-mkdir -p /opt/ci-cache /opt/rust-cache/shared
-MNT_OPTS='nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport,_netdev'
-# EFS access points expose the two cache roots as separate exports.
-mount -t nfs4 -o "$MNT_OPTS" "$EFS":/ /mnt 2>/dev/null || true
-mountpoint -q /opt/ci-cache        || mount -t nfs4 -o "$MNT_OPTS" "$EFS":/ci-cache /opt/ci-cache
-mountpoint -q /opt/rust-cache/shared || mount -t nfs4 -o "$MNT_OPTS" "$EFS":/rust-cache /opt/rust-cache/shared
-chmod 0777 /opt/ci-cache /opt/rust-cache/shared || true
+MNT_OPTS='nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=150,retrans=2,noresvport,_netdev'
+mkdir -p /mnt/efs /opt/ci-cache /opt/rust-cache/shared
+if timeout 90 mount -t nfs4 -o "$MNT_OPTS" "$EFS":/ /mnt/efs; then
+  mkdir -p /mnt/efs/ci-cache /mnt/efs/rust-cache
+  chmod 0777 /mnt/efs/ci-cache /mnt/efs/rust-cache 2>/dev/null || true
+  mount --bind /mnt/efs/ci-cache        /opt/ci-cache
+  mount --bind /mnt/efs/rust-cache      /opt/rust-cache/shared
+fi
 %{ endif ~}
+
+exit 0
