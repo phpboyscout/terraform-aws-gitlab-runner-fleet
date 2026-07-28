@@ -43,4 +43,5 @@ include:
 
   - component: gitlab.com/phpboyscout/cicd/tofu-module-publish@v0.33.0
     inputs:
+      stage: release
       module_name: gitlab-runner-fleet
