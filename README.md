@@ -35,38 +35,38 @@ module "runner_fleet" {
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.12.5 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 6.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | 6.57.1 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 6.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.57.1 |
 
 ## Resources
 
 | Name | Type |
 | ---- | ---- |
-| [aws_autoscaling_group.manager](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/autoscaling_group) | resource |
-| [aws_autoscaling_group.worker](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/autoscaling_group) | resource |
-| [aws_efs_file_system.cache](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_file_system) | resource |
-| [aws_efs_mount_target.cache](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_mount_target) | resource |
-| [aws_iam_instance_profile.manager](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_instance_profile) | resource |
-| [aws_iam_instance_profile.worker](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_instance_profile) | resource |
-| [aws_iam_role.manager](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
-| [aws_iam_role.worker](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
-| [aws_iam_role_policy.manager](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
-| [aws_iam_role_policy.manager_cache](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
-| [aws_iam_role_policy_attachment.manager_ssm](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
-| [aws_kms_grant.asg_ebs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_grant) | resource |
-| [aws_launch_template.manager](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template) | resource |
-| [aws_launch_template.worker](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template) | resource |
-| [aws_s3_bucket.cache](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
-| [aws_s3_bucket_lifecycle_configuration.cache](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
-| [aws_s3_bucket_public_access_block.cache](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block) | resource |
-| [aws_security_group.efs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
-| [aws_security_group.manager](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
-| [aws_security_group.worker](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
+| [aws_autoscaling_group.manager](https://registry.terraform.io/providers/hashicorp/aws/6.57.1/docs/resources/autoscaling_group) | resource |
+| [aws_autoscaling_group.worker](https://registry.terraform.io/providers/hashicorp/aws/6.57.1/docs/resources/autoscaling_group) | resource |
+| [aws_efs_file_system.cache](https://registry.terraform.io/providers/hashicorp/aws/6.57.1/docs/resources/efs_file_system) | resource |
+| [aws_efs_mount_target.cache](https://registry.terraform.io/providers/hashicorp/aws/6.57.1/docs/resources/efs_mount_target) | resource |
+| [aws_iam_instance_profile.manager](https://registry.terraform.io/providers/hashicorp/aws/6.57.1/docs/resources/iam_instance_profile) | resource |
+| [aws_iam_instance_profile.worker](https://registry.terraform.io/providers/hashicorp/aws/6.57.1/docs/resources/iam_instance_profile) | resource |
+| [aws_iam_role.manager](https://registry.terraform.io/providers/hashicorp/aws/6.57.1/docs/resources/iam_role) | resource |
+| [aws_iam_role.worker](https://registry.terraform.io/providers/hashicorp/aws/6.57.1/docs/resources/iam_role) | resource |
+| [aws_iam_role_policy.manager](https://registry.terraform.io/providers/hashicorp/aws/6.57.1/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy.manager_cache](https://registry.terraform.io/providers/hashicorp/aws/6.57.1/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy_attachment.manager_ssm](https://registry.terraform.io/providers/hashicorp/aws/6.57.1/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_kms_grant.asg_ebs](https://registry.terraform.io/providers/hashicorp/aws/6.57.1/docs/resources/kms_grant) | resource |
+| [aws_launch_template.manager](https://registry.terraform.io/providers/hashicorp/aws/6.57.1/docs/resources/launch_template) | resource |
+| [aws_launch_template.worker](https://registry.terraform.io/providers/hashicorp/aws/6.57.1/docs/resources/launch_template) | resource |
+| [aws_s3_bucket.cache](https://registry.terraform.io/providers/hashicorp/aws/6.57.1/docs/resources/s3_bucket) | resource |
+| [aws_s3_bucket_lifecycle_configuration.cache](https://registry.terraform.io/providers/hashicorp/aws/6.57.1/docs/resources/s3_bucket_lifecycle_configuration) | resource |
+| [aws_s3_bucket_public_access_block.cache](https://registry.terraform.io/providers/hashicorp/aws/6.57.1/docs/resources/s3_bucket_public_access_block) | resource |
+| [aws_security_group.efs](https://registry.terraform.io/providers/hashicorp/aws/6.57.1/docs/resources/security_group) | resource |
+| [aws_security_group.manager](https://registry.terraform.io/providers/hashicorp/aws/6.57.1/docs/resources/security_group) | resource |
+| [aws_security_group.worker](https://registry.terraform.io/providers/hashicorp/aws/6.57.1/docs/resources/security_group) | resource |
 
 ## Inputs
 
