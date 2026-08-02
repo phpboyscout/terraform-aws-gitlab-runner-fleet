@@ -2,8 +2,17 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
-    "gitlab>phpboyscout/cicd"
+    "gitlab>phpboyscout/cicd",
+    "gitlab>phpboyscout/cicd:terraform-docs"
   ],
+  "postUpgradeTasks": {
+    "commands": [
+      "terraform-docs --output-mode=inject --output-file=README.md markdown table .",
+      "terraform-docs --output-mode=inject --output-file=README.md markdown table examples/minimal"
+    ],
+    "fileFilters": ["**/README.md"],
+    "executionMode": "branch"
+  },
   "schedule": ["before 6am on monday"],
   "timezone": "Europe/London",
   "labels": ["dependencies"],
