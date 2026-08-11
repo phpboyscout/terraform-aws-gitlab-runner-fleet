@@ -28,3 +28,19 @@ module "runner_fleet" {
   tags = { Project = "phpboyscout", Environment = "ops" }
 }
 ```
+
+## Further reading
+
+The blog carries a curated route through this subject: **[Infrastructure with AWS and OpenTofu](https://phpboyscout.uk/topics/infrastructure/)** collects
+everything written about it, ordered so you can start at the beginning rather
+than newest-first.
+
+!!! tip "Ask phpbotscout"
+
+    ![phpbotscout](https://phpboyscout.uk/images/projects/logo-phpbotscout.png){ width="84" align=left style="border-radius:10px;margin-right:1rem" }
+
+    He answers questions about the projects over on the Discord, citing the docs
+    where they already cover it, and offering to raise an issue where they don't.
+    Bring a bug, an idea, or a questionable engineering decision.
+
+    [Join the Discord](https://discord.gg/mQzGbmGyzZ){ .md-button .md-button--primary }
