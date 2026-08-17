@@ -21,32 +21,32 @@ stages:
   - .post
 
 include:
-  - component: gitlab.com/phpboyscout/cicd/releaser-pleaser@v0.35.0
+  - component: gitlab.com/phpboyscout/cicd/releaser-pleaser@v0.36.0
     inputs:
       branch: main
       stage: release
       token: $RELEASER_PLEASER_TOKEN
 
-  - component: gitlab.com/phpboyscout/cicd/tofu-lint@v0.35.0
+  - component: gitlab.com/phpboyscout/cicd/tofu-lint@v0.36.0
     inputs:
       stage: lint
       paths: ". examples/minimal"
 
-  - component: gitlab.com/phpboyscout/cicd/tofu-security@v0.35.0
+  - component: gitlab.com/phpboyscout/cicd/tofu-security@v0.36.0
     inputs:
       stage: security
       paths: "."
 
-  - component: gitlab.com/phpboyscout/cicd/tofu-validate@v0.35.0
+  - component: gitlab.com/phpboyscout/cicd/tofu-validate@v0.36.0
     inputs:
       stage: test
       validate_paths: ". examples/minimal"
 
-  - component: gitlab.com/phpboyscout/cicd/tofu-module-publish@v0.35.0
+  - component: gitlab.com/phpboyscout/cicd/tofu-module-publish@v0.36.0
     inputs:
       stage: release
       module_name: gitlab-runner-fleet
 
-  - component: gitlab.com/phpboyscout/cicd/zensical-pages@v0.35.0
+  - component: gitlab.com/phpboyscout/cicd/zensical-pages@v0.36.0
     inputs:
       stage: pages
