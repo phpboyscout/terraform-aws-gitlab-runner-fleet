@@ -148,7 +148,7 @@ variable "worker_ami_name_filter" {
 # --- caching parity with runner1 (D8) ---------------------------------
 
 variable "enable_efs_cache" {
-  description = "Provision a shared EFS filesystem and mount it on every worker for the read-mostly caches — scanner vuln DBs (/opt/ci-cache) and the cargo registry / rustup home (/opt/rust-cache/shared) — matching runner1's host mounts. Write-heavy Rust target/ is deliberately NOT on EFS (see runner_docker_volumes / S3 cache)."
+  description = "Provision a shared EFS filesystem and mount it on every worker for the read-mostly caches — scanner vuln DBs (/opt/ci-cache) and the cargo registry (/opt/rust-cache/shared) — matching runner1's host mounts. The rustup home is deliberately NOT shared (see runner_environment); write-heavy Rust target/ is deliberately NOT on EFS (see runner_docker_volumes / S3 cache)."
   type        = bool
   default     = true
 }
@@ -159,20 +159,49 @@ variable "runner_docker_volumes" {
   default     = ["/cache", "/opt/ci-cache:/opt/ci-cache:rw", "/opt/rust-cache/shared:/opt/rust-cache/shared:rw"]
 }
 
+# The shared cache: registry YES, rustup home NO.
+#
+# CARGO_HOME on the shared mount is the win — the crate registry is read-mostly,
+# cargo locks it for concurrent access, and it is what stops every job
+# re-downloading the index.
+#
+# RUSTUP_HOME on the shared mount is a defect, and was the default here until
+# 2026-08-24. A rustup home is not read-mostly: any job whose rust-toolchain.toml
+# asks for something the image lacks INSTALLS into it, and up to max_instances
+# workers share one EFS filesystem. Concurrent installs leave a half-written
+# toolchain that rustup then reports as healthy — `rustup component add` answers
+# "up to date" against a toolchain missing the component — and the failure
+# surfaces later, elsewhere, as "the '<binary>' binary ... is not applicable to
+# the '<version>' toolchain". It corrupts state rather than failing cleanly, so
+# it reads as flaky tests until someone inspects the toolchain directory.
+# See phpboyscout/infra#6: it happened on runner1, was hand-repaired, then
+# recurred on this fleet with the shared 1.98.0 missing rustc itself.
+#
+# The rust-tools image already solves this: it bakes the toolchain its consumers
+# pin, at the image's own /usr/local/rustup, precisely so a job READS rather than
+# WRITES. Overriding RUSTUP_HOME here discarded that design wholesale.
+#
+# Dropping it does not eliminate job-time installs — a repo pinning
+# profile = "default" still pulls rust-docs — it makes them land in the container
+# and die with it, rather than in a directory every worker shares.
 variable "runner_environment" {
-  description = "Runner-level environment applied to every job (mirrors runner1's [[runners]] environment — cargo/rustup home on the shared cache, git-CLI fetch)."
+  description = "Runner-level environment applied to every job. CARGO_HOME points at the shared cache (read-mostly, cargo-locked); RUSTUP_HOME deliberately does NOT — a shared rustup home is corrupted by concurrent installs, and the Rust image bakes the toolchain its consumers pin. See phpboyscout/infra#6."
   type        = list(string)
   default = [
     "CARGO_HOME=/opt/rust-cache/shared/cargo-home",
-    "RUSTUP_HOME=/opt/rust-cache/shared/rustup",
     "CARGO_NET_GIT_FETCH_WITH_CLI=true",
   ]
 }
 
+# No PATH prepend of the shared cargo-home/bin, for the same reason: past jobs
+# write rustup proxies there, and it shadows the Rust image's baked CI tools
+# (cargo-nextest, cargo-llvm-cov, cargo-deny, cargo-audit) with whatever an
+# earlier job happened to leave. rust-lint failed loudly when a proxy was stale;
+# a shadowed cargo-audit would have failed quietly, as a wrong answer.
 variable "runner_pre_build_script" {
-  description = "Runner pre_build_script (mirrors runner1). Kept configurable because it needs CI-var expansion the static environment can't do. Note: CARGO_TARGET_DIR (write-heavy) points at local worker disk, NOT the EFS mount, to avoid network-FS latency on cargo's small-file I/O (D8)."
+  description = "Runner pre_build_script. Kept configurable because it needs CI-var expansion the static environment can't do. CARGO_TARGET_DIR (write-heavy) points at local worker disk, NOT the EFS mount, to avoid network-FS latency on cargo's small-file I/O (D8)."
   type        = string
-  default     = "export CARGO_TARGET_DIR=\"/opt/rust-cache/$${CI_PROJECT_PATH_SLUG}/target\"; export PATH=\"/opt/rust-cache/shared/cargo-home/bin:$${PATH}\""
+  default     = "export CARGO_TARGET_DIR=\"/opt/rust-cache/$${CI_PROJECT_PATH_SLUG}/target\""
 }
 
 variable "cache_s3_bucket" {

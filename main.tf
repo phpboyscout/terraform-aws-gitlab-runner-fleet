@@ -458,9 +458,27 @@ resource "aws_autoscaling_group" "manager" {
   desired_capacity    = 1
   vpc_zone_identifier = var.subnet_ids
 
+  # Pin the ASG to the template's CURRENT version, NOT "$Latest". This is
+  # what makes instance_refresh below actually fire.
+  #
+  # An ASG whose launch_template block says "$Latest" has no diff when the
+  # template's *contents* change — the id and the literal string "$Latest"
+  # are both unchanged — so terraform never updates the ASG, and an instance
+  # refresh is only triggered by an update to the ASG. The apply succeeds, a
+  # new launch template version exists, and the running manager keeps its old
+  # user-data (and therefore its old config.toml) indefinitely.
+  #
+  # Observed 2026-08-24: a runner-config fix applied cleanly, reported
+  # success, and changed nothing. The manager had to be replaced by hand from
+  # the console before the new config.toml existed on the box. Worse than the
+  # bug it was fixing, because it fails silently — see phpboyscout/infra#6.
+  #
+  # The WORKER ASG deliberately keeps "$Latest": its instances are ephemeral
+  # (desired_capacity 0, spot, bounded max_use_count), so every launch already
+  # picks up the newest template, and it carries no instance_refresh to defeat.
   launch_template {
     id      = aws_launch_template.manager.id
-    version = "$Latest"
+    version = aws_launch_template.manager.latest_version
   }
 
   # Roll the manager when the launch template (config/version) changes.
