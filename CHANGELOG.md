@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.1.1](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/releases/v0.1.1)
+
+[Compare to previous version](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/compare/v0.1.0...v0.1.1)
+
+### Bug Fixes
+
+- roll the manager on config change, and stop sharing the rustup home ([bfc8549](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/commit/bfc85490d54ab38874f4e0f3ca3a680b1750c568))
+
 ## [v0.1.0](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/releases/v0.1.0)
 
 ### Features
