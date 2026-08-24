@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.1.4](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/releases/v0.1.4)
+
+[Compare to previous version](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/compare/v0.1.3...v0.1.4)
+
+### Bug Fixes
+
+- constrain the aws provider by range, not an exact pin ([a57df65](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/commit/a57df65f06e555101d3263a79e9242eeec83cca7))
+
 ## [v0.1.3](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/releases/v0.1.3)
 
 [Compare to previous version](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/compare/v0.1.0...v0.1.3)
