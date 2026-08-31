@@ -2,13 +2,13 @@
 # phpboyscout/iac/terraform-aws-gitlab-runner-fleet CI pipeline.
 #
 # Single-module repo (module HCL at root + examples/minimal fixture).
-# Imports the reusable phpboyscout/cicd components. releaser-pleaser
+# Imports the reusable phpboyscout/cicd components. colophon
 # maintains a Release MR on `main`; merging it cuts a vX.Y.Z tag whose
 # pipeline runs tofu-module-publish, pushing the module to the GitLab
 # module registry under gitlab.com/phpboyscout/gitlab-runner-fleet/aws.
 #
 # Required CI variable:
-#   RELEASER_PLEASER_TOKEN — project access token (Maintainer; api,
+#   COLOPHON_TOKEN — project access token (Maintainer; api,
 #   read_repository, write_repository) for the release-MR + tag.
 # ---------------------------------------------------------------------------
 
@@ -21,11 +21,10 @@ stages:
   - .post
 
 include:
-  - component: gitlab.com/phpboyscout/cicd/releaser-pleaser@v0.39.2
+  - component: gitlab.com/phpboyscout/cicd/colophon@v0.42.0
     inputs:
       branch: main
       stage: release
-      token: $RELEASER_PLEASER_TOKEN
 
   - component: gitlab.com/phpboyscout/cicd/tofu-lint@v0.39.2
     inputs:
