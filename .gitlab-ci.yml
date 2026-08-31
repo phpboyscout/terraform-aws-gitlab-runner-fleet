@@ -21,7 +21,7 @@ stages:
   - .post
 
 include:
-  - component: gitlab.com/phpboyscout/cicd/colophon@v0.42.0
+  - component: gitlab.com/phpboyscout/cicd/colophon@v0.42.1
     inputs:
       branch: main
       stage: release
