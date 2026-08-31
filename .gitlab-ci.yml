@@ -26,26 +26,26 @@ include:
       branch: main
       stage: release
 
-  - component: gitlab.com/phpboyscout/cicd/tofu-lint@v0.39.2
+  - component: gitlab.com/phpboyscout/cicd/tofu-lint@v0.42.1
     inputs:
       stage: lint
       paths: ". examples/minimal"
 
-  - component: gitlab.com/phpboyscout/cicd/tofu-security@v0.39.2
+  - component: gitlab.com/phpboyscout/cicd/tofu-security@v0.42.1
     inputs:
       stage: security
       paths: "."
 
-  - component: gitlab.com/phpboyscout/cicd/tofu-validate@v0.39.2
+  - component: gitlab.com/phpboyscout/cicd/tofu-validate@v0.42.1
     inputs:
       stage: test
       validate_paths: ". examples/minimal"
 
-  - component: gitlab.com/phpboyscout/cicd/tofu-module-publish@v0.39.2
+  - component: gitlab.com/phpboyscout/cicd/tofu-module-publish@v0.42.1
     inputs:
       stage: release
       module_name: gitlab-runner-fleet
 
-  - component: gitlab.com/phpboyscout/cicd/zensical-pages@v0.39.2
+  - component: gitlab.com/phpboyscout/cicd/zensical-pages@v0.42.1
     inputs:
       stage: pages
