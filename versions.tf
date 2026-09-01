@@ -13,7 +13,7 @@ terraform {
       # It was "6.61.0" up to v0.1.3, which is Renovate treating this like a
       # root module. phpboyscout/infra could not take v0.1.3 at all: its lock
       # was on 6.60.0 and the intersected constraint became unsatisfiable.
-      version = "~> 6.0"
+      version = "6.62.0"
     }
   }
 }
