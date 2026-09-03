@@ -21,31 +21,31 @@ stages:
   - .post
 
 include:
-  - component: gitlab.com/phpboyscout/cicd/colophon@v0.42.1
+  - component: gitlab.com/phpboyscout/cicd/colophon@main
     inputs:
       branch: main
       stage: release
 
-  - component: gitlab.com/phpboyscout/cicd/tofu-lint@v0.42.1
+  - component: gitlab.com/phpboyscout/cicd/tofu-lint@main
     inputs:
       stage: lint
       paths: ". examples/minimal"
 
-  - component: gitlab.com/phpboyscout/cicd/tofu-security@v0.42.1
+  - component: gitlab.com/phpboyscout/cicd/tofu-security@main
     inputs:
       stage: security
       paths: "."
 
-  - component: gitlab.com/phpboyscout/cicd/tofu-validate@v0.42.1
+  - component: gitlab.com/phpboyscout/cicd/tofu-validate@main
     inputs:
       stage: test
       validate_paths: ". examples/minimal"
 
-  - component: gitlab.com/phpboyscout/cicd/tofu-module-publish@v0.42.1
+  - component: gitlab.com/phpboyscout/cicd/tofu-module-publish@main
     inputs:
       stage: release
       module_name: gitlab-runner-fleet
 
-  - component: gitlab.com/phpboyscout/cicd/zensical-pages@v0.42.1
+  - component: gitlab.com/phpboyscout/cicd/zensical-pages@main
     inputs:
       stage: pages
