@@ -19,7 +19,7 @@ module "fleet" {
   vpc_id                          = "vpc-00000000000000000"
   subnet_ids                      = ["subnet-00000000000000001", "subnet-00000000000000002"]
   runner_token_ssm_parameter_name = "/pbs-ops/gitlab-runner/authentication-token"
-  ebs_kms_key_arn                 = "arn:aws:kms:eu-west-2:617908174105:key/00000000-0000-0000-0000-000000000000"
+  ebs_kms_key_arn                 = "arn:aws:kms:eu-west-2:111122223333:key/00000000-0000-0000-0000-000000000000"
 
   tags = { Project = "phpboyscout", Environment = "ops" }
 }
