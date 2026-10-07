@@ -1,5 +1,23 @@
 # Changelog
 
+## [v0.3.0](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/releases/v0.3.0)
+
+[Compare to previous version](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/compare/v0.2.0...v0.3.0)
+
+### Notes
+
+- The default `runner_pre_build_script` no longer exports `CARGO_TARGET_DIR`; it exports only `RUST_CACHE_DIR`. Jobs on the cicd Rust components are unaffected, since they set their own target directory under it. A hand-written job that relied on the runner's shared `/opt/rust-cache/<slug>/target` now builds in its checkout unless it sets `CARGO_TARGET_DIR` itself. Adopting this version replaces the manager instance.
+
+- The usage examples now pin `version = "~> 0.2.0"`. The `0.1.0` they named was never in the module registry, so copying the old snippet failed at `tofu init`.
+
+### Features
+
+- stop setting CARGO_TARGET_DIR in the default pre_build_script ([8af20f7](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/commit/8af20f7563dc46ad93b1c425f7f69ea9362a816d))
+
+### Bug Fixes
+
+- **docs**: pin the usage snippets to a version the registry serves ([f54b7d7](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/commit/f54b7d78411665950b6393c43643701257f9939b))
+
 ## [v0.2.0](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/releases/v0.2.0)
 
 [Compare to previous version](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/compare/v0.1.4...v0.2.0)
