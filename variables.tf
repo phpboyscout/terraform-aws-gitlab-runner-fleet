@@ -199,9 +199,9 @@ variable "runner_environment" {
 # earlier job happened to leave. rust-lint failed loudly when a proxy was stale;
 # a shadowed cargo-audit would have failed quietly, as a wrong answer.
 variable "runner_pre_build_script" {
-  description = "Runner pre_build_script. Kept configurable because it needs CI-var expansion the static environment can't do. Both paths are on local worker disk, NOT the EFS mount, to avoid network-FS latency on cargo's small-file I/O (D8). RUST_CACHE_DIR is the project's Rust cache root, under which the cicd Rust components key their own target directory by compiler and libc; the CARGO_TARGET_DIR export goes once they do. Must match runner1's config.toml. See phpboyscout/infra#25."
+  description = "Runner pre_build_script. Kept configurable because it needs CI-var expansion the static environment can't do. Exports RUST_CACHE_DIR, the project's Rust cache root on local worker disk, NOT the EFS mount, to avoid network-FS latency on cargo's small-file I/O (D8). The cicd Rust components key their target directory beneath it by compiler and libc. CARGO_TARGET_DIR is deliberately not set: it overrode the job's own, and a job that ignores RUST_CACHE_DIR builds in its checkout, slower but never wrong. Must match runner1's config.toml. See phpboyscout/infra#25."
   type        = string
-  default     = "export CARGO_TARGET_DIR=\"/opt/rust-cache/$${CI_PROJECT_PATH_SLUG}/target\"\nexport RUST_CACHE_DIR=\"/opt/rust-cache/$${CI_PROJECT_PATH_SLUG}\""
+  default     = "export RUST_CACHE_DIR=\"/opt/rust-cache/$${CI_PROJECT_PATH_SLUG}\""
 }
 
 variable "cache_s3_bucket" {
