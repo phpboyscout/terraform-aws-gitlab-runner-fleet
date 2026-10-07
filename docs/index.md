@@ -15,7 +15,7 @@ See `phpboyscout/infra` spec `2026-07-28-hand-rolled-runner-fleet-module`.
 ```hcl
 module "runner_fleet" {
   source  = "gitlab.com/phpboyscout/gitlab-runner-fleet/aws"
-  version = "0.1.0"
+  version = "~> 0.2.0" # pre-1.0, a minor release may break: take patches only
 
   name_prefix                     = "pbs-ops-runner"
   vpc_id                          = var.vpc_id

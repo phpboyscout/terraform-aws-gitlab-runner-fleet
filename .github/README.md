@@ -19,7 +19,7 @@ rather than from a git source:
 ```hcl
 module "runner_fleet" {
   source  = "gitlab.com/phpboyscout/gitlab-runner-fleet/aws"
-  version = "0.1.0"
+  version = "~> 0.2.0" # pre-1.0, a minor release may break: take patches only
 }
 ```
 
