@@ -1,5 +1,23 @@
 # Changelog
 
+## [v0.2.0](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/releases/v0.2.0)
+
+[Compare to previous version](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/compare/v0.1.4...v0.2.0)
+
+### Notes
+
+- The default `runner_pre_build_script` also exports `RUST_CACHE_DIR=/opt/rust-cache/${CI_PROJECT_PATH_SLUG}`, the project's Rust cache root for the cicd Rust components to key their target directory under. Nothing reads it until those components are released, so job behaviour is unchanged. Like any runner config change, adopting this version replaces the manager instance.
+
+- Releases are announced to the estate's release feed.
+
+### Features
+
+- export RUST_CACHE_DIR beside CARGO_TARGET_DIR in the default pre_build_script ([409e918](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/commit/409e91824e867b8efdd4b607b1a1bd273df1f4ec))
+
+### Bug Fixes
+
+- **examples**: use AWS's placeholder account ID in the minimal example KMS ARN ([e3ebddd](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/commit/e3ebddd77dfd28819ea1a72b885fa8ddebe272a6))
+
 ## [v0.1.4](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/releases/v0.1.4)
 
 [Compare to previous version](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/compare/v0.1.3...v0.1.4)
