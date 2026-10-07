@@ -2,9 +2,9 @@
 
 **A GitLab Runner fleeting fleet on AWS: one always-on manager, scale-to-zero
 spot workers.** Uses the `docker-autoscaler` executor with `fleeting-plugin-aws`,
-and deliberately exposes the levers that off-the-shelf modules hide — spot
+and deliberately exposes the levers that off-the-shelf modules hide: spot
 allocation strategy, worker Docker install and disk size, and cache backend.
-Pre-1.0, so pin to a tag rather than a branch.
+Pre-1.0, so pin a version range that takes patches only.
 
 > **This is a read-only mirror. The canonical repository is on GitLab:**
 > **https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet**

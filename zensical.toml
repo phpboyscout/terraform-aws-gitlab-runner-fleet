@@ -1,6 +1,6 @@
 [project]
 site_name = "terraform-aws-gitlab-runner-fleet"
-site_description = "A GitLab Runner fleeting fleet on AWS — one always-on manager plus scale-to-zero spot workers."
+site_description = "A GitLab Runner fleeting fleet on AWS: one always-on manager plus scale-to-zero spot workers."
 site_author = "Matt Cockayne"
 site_url = "https://aws-gitlab-runner-fleet.iac.phpboyscout.uk"
 copyright = """
@@ -49,4 +49,4 @@ link = "https://discord.gg/mQzGbmGyzZ"
 [[project.extra.social]]
 icon = "fontawesome/solid/book"
 link = "https://phpboyscout.uk/topics/infrastructure/"
-name = "Infrastructure with AWS and OpenTofu — the guide on the blog"
+name = "Infrastructure with AWS and OpenTofu: the guide on the blog"

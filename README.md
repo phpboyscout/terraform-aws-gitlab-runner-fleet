@@ -1,14 +1,16 @@
 # terraform-aws-gitlab-runner-fleet
 
 A lean OpenTofu module for a **GitLab Runner fleeting fleet** on AWS: one
-always-on manager plus **scale-to-zero spot workers** (the next-gen
-`docker-autoscaler` executor + `fleeting-plugin-aws`). Purpose-built for the
+always-on manager plus **scale-to-zero spot workers** (the
+`docker-autoscaler` executor with `fleeting-plugin-aws`). Purpose-built for the
 phpboyscout ops account to replace `cattle-ops/gitlab-runner`, giving full
-control over the levers that module hid — spot allocation strategy (no forced
-`spot_instance_pools`), worker Docker install + disk size, an EFS/S3 cache
-layer, and no plan-time Lambda (so CI plan/apply works).
+control over the levers that module hid: spot allocation strategy (no forced
+`spot_instance_pools`), the workers' Docker install and disk size, an EFS and S3
+cache layer, and no plan-time Lambda (so CI can plan and apply in separate jobs).
 
-See `phpboyscout/infra` spec `2026-07-28-hand-rolled-runner-fleet-module`.
+The design is spec 0015, *A hand-rolled terraform-aws-gitlab-runner-fleet
+module*, in the `phpboyscout/infra` wiki. That project is private, so it is
+named here rather than linked.
 
 ## Usage
 
@@ -28,6 +30,9 @@ module "runner_fleet" {
   tags = { Project = "phpboyscout", Environment = "ops" }
 }
 ```
+
+Full documentation: **https://aws-gitlab-runner-fleet.iac.phpboyscout.uk**. The
+input and output tables below are generated from the module source.
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
