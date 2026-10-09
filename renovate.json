@@ -1,8 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended",
-    "gitlab>phpboyscout/cicd",
+    "gitlab>phpboyscout/cicd:tofu",
+    "gitlab>phpboyscout/cicd:library",
     "gitlab>phpboyscout/cicd:terraform-docs"
   ],
   "postUpgradeTasks": {
@@ -10,23 +10,9 @@
       "terraform-docs --output-mode=inject --output-file=README.md markdown table .",
       "terraform-docs --output-mode=inject --output-file=README.md markdown table examples/minimal"
     ],
-    "fileFilters": ["**/README.md"],
+    "fileFilters": [
+      "**/README.md"
+    ],
     "executionMode": "branch"
-  },
-  "schedule": ["before 6am on monday"],
-  "timezone": "Europe/London",
-  "labels": ["dependencies"],
-  "commitMessagePrefix": "chore(deps):",
-  "prHourlyLimit": 4,
-  "rangeStrategy": "pin",
-  "dependencyDashboard": true,
-  "packageRules": [
-    {
-      "description": "Auto-merge patch + minor updates if CI is green.",
-      "matchUpdateTypes": ["patch", "minor"],
-      "automerge": true,
-      "automergeType": "pr",
-      "platformAutomerge": true
-    }
-  ]
+  }
 }
