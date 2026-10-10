@@ -1,5 +1,20 @@
 # Changelog
 
+## [v0.3.1](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/releases/v0.3.1)
+
+[Compare to previous version](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/compare/v0.3.0...v0.3.1)
+
+### Notes
+
+- The declared `required_version` is widened from `~> 1.12.5` to the floor `>= 1.5.0`, the oldest version the module supports. OpenTofu 1.12 and later do not enforce it in a `.tf` file, and Terraform users on any release from 1.5 onward are no longer refused. CI still tests on the OpenTofu release pinned in `.opentofu-version`.
+
+- The module once again constrains the `hashicorp/aws` provider to `~> 6.0` rather than an exact version. From 2026-09-01 until this release, Renovate had re-pinned it exactly, so a consuming stack whose lock file was on a different 6.x provider could not `init` with this module.
+
+### Bug Fixes
+
+- declare required_version as the floor >= 1.5.0 ([d99a568](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/commit/d99a56802d915f81a6170a99763c745fa5b1fd6c))
+- constrain the aws provider by range again ([342c7d6](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/commit/342c7d6a4c43bfc41265456aac465f94c0f2d5c0))
+
 ## [v0.3.0](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/releases/v0.3.0)
 
 [Compare to previous version](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/compare/v0.2.0...v0.3.0)
