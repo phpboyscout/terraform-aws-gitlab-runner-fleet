@@ -34,12 +34,18 @@ module "runner_fleet" {
 Full documentation: **https://aws-gitlab-runner-fleet.iac.phpboyscout.uk**. The
 input and output tables below are generated from the module source.
 
+The `terraform` row under Requirements is a floor: the oldest version the
+module supports, raised by hand only when the module uses a newer feature. The
+pin in `.opentofu-version` is what CI tests on. In a `.tf` file, OpenTofu 1.12
+and later treat `required_version` as a statement, not a gate
+([opentofu#3347](https://github.com/opentofu/opentofu/issues/3347)).
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
 | ---- | ------- |
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.12.5 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 6.0 |
 
 ## Providers
