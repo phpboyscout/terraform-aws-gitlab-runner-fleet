@@ -50,7 +50,7 @@ infrastructure change wearing a module diff.
 | Writing anything others will read and check | `checkable-claims` |
 | Writing a commit message (the `commit-msg` hook enforces the format) | `conventional-commits` |
 | Branching, pushing, opening a merge request | `forge-publish-workflow` |
-| A release is due, or the Release MR needs a look | `releaser-pleaser-releases`, `pre-1-0-release-safety` |
+| A release is due, or the Release MR needs a look | `colophon-releases`, `pre-1-0-release-safety` |
 | Bumping the pinned `phpboyscout/cicd` components or the AWS provider | `adopt-shared-components`, `assess-before-bumping` |
 | Working in a repo other than the one you were invoked in | `cross-repo-worktree` |
 
@@ -115,6 +115,6 @@ no workflows — it is the front page of the read-only GitHub push mirror; CI is
 This project merges with a merge commit (`merge_method = merge`), unlike most of the
 estate, so your merge request will produce one; that drift from the house
 rebase-and-fast-forward standard is tracked in `phpboyscout/org`, so leave it be.
-Conventional Commits still decide releases — only `feat` and `fix` cut one, and cutting
-it is the maintainer's call, never yours. Nothing published here carries AI attribution,
-and nothing at-mentions anyone.
+Conventional Commits still decide releases — `feat`, `fix`, `perf` and `refactor` cut
+one, and cutting it is the maintainer's call, never yours. Nothing published here
+carries AI attribution, and nothing at-mentions anyone.
