@@ -1,5 +1,17 @@
 # Changelog
 
+## [v0.3.2](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/releases/v0.3.2)
+
+[Compare to previous version](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/compare/v0.3.1...v0.3.2)
+
+### Notes
+
+- The Rust cache (/opt/rust-cache, including CARGO_HOME) now lives on each worker's root volume rather than on EFS, and the default runner_docker_volumes mounts /opt/rust-cache whole. A new worker starts with an empty cargo cache. If you sized worker_root_volume_size for the OS and images alone, revisit it.
+
+### Bug Fixes
+
+- **cache**: keep the fleet's Rust cache on worker disk, off EFS ([61f7948](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/commit/61f79483f84d6c7d1d122cc7a5cb6b8cd35c4418))
+
 ## [v0.3.1](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/releases/v0.3.1)
 
 [Compare to previous version](https://gitlab.com/phpboyscout/iac/terraform-aws-gitlab-runner-fleet/-/compare/v0.3.0...v0.3.1)
