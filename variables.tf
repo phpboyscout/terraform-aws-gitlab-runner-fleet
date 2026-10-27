@@ -78,7 +78,7 @@ variable "worker_instance_types" {
 }
 
 variable "worker_root_volume_size" {
-  description = "Worker root volume size (GB). Docker images + a single Rust build (cargo + target/) need generous headroom; 8 GB (the usual default) is far too small (D15)."
+  description = "Worker root volume size (GB). Holds Docker images plus the worker-local Rust caches (CARGO_HOME and every project's RUST_CACHE_DIR, which persist for the worker's life), so it needs generous headroom; 8 GB (the usual default) is far too small (D15)."
   type        = number
   default     = 200
 }
@@ -148,22 +148,23 @@ variable "worker_ami_name_filter" {
 # --- caching parity with runner1 (D8) ---------------------------------
 
 variable "enable_efs_cache" {
-  description = "Provision a shared EFS filesystem and mount it on every worker for the read-mostly caches — scanner vuln DBs (/opt/ci-cache) and the cargo registry (/opt/rust-cache/shared) — matching runner1's host mounts. The rustup home is deliberately NOT shared (see runner_environment); write-heavy Rust target/ is deliberately NOT on EFS (see runner_docker_volumes / S3 cache)."
+  description = "Provision a shared EFS filesystem and mount it on every worker at /opt/ci-cache for the scanner vuln DBs. The Rust caches are deliberately NOT on EFS: cargo skips file locks on NFS, so /opt/rust-cache is worker-local disk (infra spec 0027)."
   type        = bool
   default     = true
 }
 
 variable "runner_docker_volumes" {
-  description = "Docker volume mounts applied to every job container (mirrors runner1's [runners.docker] volumes). Defaults expose the EFS-backed shared caches plus the local /cache. Paths must exist on the worker (the module's user-data creates/mounts them)."
+  description = "Docker volume mounts applied to every job container (mirrors runner1's [runners.docker] volumes). Defaults expose the local /cache, the EFS-backed scanner cache, and the worker-local /opt/rust-cache whole, so CARGO_HOME and each project's RUST_CACHE_DIR outlive the job. Paths must exist on the worker (the module's user-data creates/mounts them)."
   type        = list(string)
-  default     = ["/cache", "/opt/ci-cache:/opt/ci-cache:rw", "/opt/rust-cache/shared:/opt/rust-cache/shared:rw"]
+  default     = ["/cache", "/opt/ci-cache:/opt/ci-cache:rw", "/opt/rust-cache:/opt/rust-cache"]
 }
 
-# The shared cache: registry YES, rustup home NO.
+# The Rust cache: registry YES, rustup home NO.
 #
-# CARGO_HOME on the shared mount is the win — the crate registry is read-mostly,
-# cargo locks it for concurrent access, and it is what stops every job
-# re-downloading the index.
+# CARGO_HOME on the worker-shared mount is the win — it is what stops every job
+# re-downloading the index. It is worker-local disk, not EFS, because cargo
+# skips its file locks on NFS mounts; on local disk the jobs sharing it lock it
+# (infra spec 0027).
 #
 # RUSTUP_HOME on the shared mount is a defect, and was the default here until
 # 2026-08-24. A rustup home is not read-mostly: any job whose rust-toolchain.toml
@@ -185,7 +186,7 @@ variable "runner_docker_volumes" {
 # profile = "default" still pulls rust-docs — it makes them land in the container
 # and die with it, rather than in a directory every worker shares.
 variable "runner_environment" {
-  description = "Runner-level environment applied to every job. CARGO_HOME points at the shared cache (read-mostly, cargo-locked); RUSTUP_HOME deliberately does NOT — a shared rustup home is corrupted by concurrent installs, and the Rust image bakes the toolchain its consumers pin. See phpboyscout/infra#6."
+  description = "Runner-level environment applied to every job. CARGO_HOME points at the worker-local Rust cache, where cargo locks it (infra spec 0027); RUSTUP_HOME deliberately does NOT — a shared rustup home is corrupted by concurrent installs, and the Rust image bakes the toolchain its consumers pin. See phpboyscout/infra#6."
   type        = list(string)
   default = [
     "CARGO_HOME=/opt/rust-cache/shared/cargo-home",

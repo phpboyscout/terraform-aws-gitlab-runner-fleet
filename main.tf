@@ -105,10 +105,10 @@ resource "aws_s3_bucket_public_access_block" "cache" {
   restrict_public_buckets = true
 }
 
-# --- shared EFS cache (read-mostly: scanner DBs + cargo registry) -----
+# --- shared EFS cache (read-mostly scanner DBs) -----------------------
 
 resource "aws_efs_file_system" "cache" {
-  # checkov:skip=CKV_AWS_184:Encrypted with the default EFS key (encrypted=true) — non-secret CI cache data (scanner DBs, cargo registry) with a 14-day IA lifecycle; a CMK adds key management for no confidentiality gain.
+  # checkov:skip=CKV_AWS_184:Encrypted with the default EFS key (encrypted=true) — non-secret CI cache data (scanner DBs) with a 14-day IA lifecycle; a CMK adds key management for no confidentiality gain.
   count = var.enable_efs_cache ? 1 : 0
 
   creation_token = "${var.name_prefix}-cache"

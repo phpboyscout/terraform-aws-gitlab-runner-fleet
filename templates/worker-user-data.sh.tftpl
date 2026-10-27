@@ -10,17 +10,24 @@ apt-get install -y docker.io nfs-common
 systemctl enable --now docker
 usermod -aG docker ubuntu
 
+# --- worker-local Rust cache (infra spec 0027) ------------------------
+# Not on EFS: cargo skips every file lock on an NFS mount, so a shared
+# CARGO_HOME is written unlocked across workers. Here it is shared only by
+# this worker's jobs, which lock it normally. 1777 lets a non-root job
+# create its own RUST_CACHE_DIR without being able to remove another's.
+mkdir -p /opt/rust-cache/shared
+chmod 1777 /opt/rust-cache /opt/rust-cache/shared
+
 # --- shared EFS cache (best-effort, never fatal) ----------------------
 set +e
 %{ if enable_efs_cache ~}
 EFS='${efs_dns_name}'
 MNT_OPTS='nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=150,retrans=2,noresvport,_netdev'
-mkdir -p /mnt/efs /opt/ci-cache /opt/rust-cache/shared
+mkdir -p /mnt/efs /opt/ci-cache
 if timeout 90 mount -t nfs4 -o "$MNT_OPTS" "$EFS":/ /mnt/efs; then
-  mkdir -p /mnt/efs/ci-cache /mnt/efs/rust-cache
-  chmod 0777 /mnt/efs/ci-cache /mnt/efs/rust-cache 2>/dev/null || true
-  mount --bind /mnt/efs/ci-cache        /opt/ci-cache
-  mount --bind /mnt/efs/rust-cache      /opt/rust-cache/shared
+  mkdir -p /mnt/efs/ci-cache
+  chmod 0777 /mnt/efs/ci-cache 2>/dev/null || true
+  mount --bind /mnt/efs/ci-cache /opt/ci-cache
 fi
 %{ endif ~}
 

@@ -85,11 +85,12 @@ and the autoscaler's own `max_instances` (`:47`). It is the cost guardrail, capp
 (`variables.tf:80-84`) it moves concurrency and bill at once.
 
 **The EFS mount is deliberately best-effort and fails quietly.**
-`templates/worker-user-data.sh.tftpl:14-27` runs it under `set +e` and ends `exit 0`,
-so a broken mount gives slow jobs, not a failed worker. That mount is already behind
-issue #2: `CARGO_HOME` lives on EFS (`variables.tf:166`), NFS cannot lock, and
-`cargo-audit` / `cargo-deny` fail intermittently under concurrency. Read it before
-moving anything onto or off the shared cache.
+`templates/worker-user-data.sh.tftpl:22-34` runs it under `set +e` and ends `exit 0`,
+so a broken mount gives slow jobs, not a failed worker. It carries only the scanner
+cache. `/opt/rust-cache` is worker-local disk, created before the mount
+(`templates/worker-user-data.sh.tftpl:13-19`), because cargo skips its file locks on
+NFS (infra spec 0027, issue #2). Read that spec before moving anything onto the
+shared cache.
 
 **Two things float that look pinned**: the worker AMI (`most_recent = true`,
 `main.tf:11-23`) and the fleeting plugin (`aws:latest`, installed at boot —
